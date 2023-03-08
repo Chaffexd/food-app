@@ -10,11 +10,32 @@ const defaultCartState = {
 
 const cartReducer = (state, action) => {
     if(action.type === 'ADD_CART_ITEM') {
-        // concat doesn't push to an existing array but instead creates a new one
-        const updatedItems = state.items.concat(action.item);
         // new total amount = old total snapshot + new
         // if we multiple those 2, we know how much our total amount needs to change 
         const updatedTotalAmount = state.totalAmount + action.item.price * action.item.amount;
+        // the purpose of this is to ensure that if the action item is the same as the item in the cart is the same
+        // it will aggregate them
+        // so if item.id is the same as the action.item.id, it will return true due to findIndex
+        const existingCartItemsIndex = state.items.findIndex(
+            (item) => item.id === action.item.id
+        );
+        const existingCartItem = state.items[existingCartItemsIndex];
+
+        let updatedItems;
+
+        if(existingCartItem) {
+            const updatedItem = {
+                ...existingCartItem,
+                amount: existingCartItem.amount + action.item.amount
+            };
+            // this is a new array where we copy the existing items
+            updatedItems = [...state.items];
+            // then we overwrite to to updatedItem
+            updatedItems[existingCartItemsIndex] = updatedItem;
+        } else {
+            // concat doesn't push to an existing array but instead creates a new one
+            updatedItems = state.items.concat(action.item);
+        }
         return {
             items: updatedItems,
             totalAmount: updatedTotalAmount
