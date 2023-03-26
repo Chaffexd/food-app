@@ -61,6 +61,11 @@ const cartReducer = (state, action) => {
             totalAmount: updatedTotalAmount
         };
     }
+    if(action.type === 'CLEAR') {
+        return defaultCartState;
+    }
+
+
     return defaultCartState;
 };
 
@@ -73,6 +78,10 @@ const CartProvider = (props) => {
     // first element is always your state snapshot
     // second element function that allows you to dispatch an action to the reducer
     const [cartState, dispatchCartAction] = useReducer(cartReducer, defaultCartState);
+
+    const clearCartHandler = () => {
+        dispatchCartAction({ type: 'CLEAR' });
+    };
 
     const addItemToCartHandler = (item) => {  
         // when you dispatch an action, it's typically an object, but can be anything  
@@ -87,7 +96,8 @@ const CartProvider = (props) => {
         items: cartState.items,
         totalAmount: cartState.totalAmount,
         addItem: addItemToCartHandler,
-        removeItem: removeItemFromCartHandler
+        removeItem: removeItemFromCartHandler,
+        clearCart: clearCartHandler
     };
 
     return (
