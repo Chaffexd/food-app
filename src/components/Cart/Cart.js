@@ -26,6 +26,16 @@ const Cart = (props) => {
         setIsCheckOut(true);
     };
 
+    const submitOrderHandler = (userData) => {
+        fetch('https://food-app-9d67d-default-rtdb.europe-west1.firebasedatabase.app/orders.json', {
+            method: 'POST',
+            body: JSON.stringify({
+                user: userData,
+                orderedItems: cartContext.items
+            })
+        });
+    };
+
     const cartItems = (
     <ul className={classes['cart-items']}>
         {cartContext.items.map((item) => 
@@ -53,7 +63,7 @@ const Cart = (props) => {
                 <span>Total Amount</span>
                 <span>${totalAmount}</span>
             </div>
-            {isCheckOut && <Checkout onCancel={props.onHideCart} />}
+            {isCheckOut && <Checkout onCancel={props.onHideCart} onConfirm={submitOrderHandler} />}
             {!isCheckOut && modalActions}
         </Modal>
     )
